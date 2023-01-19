@@ -18,6 +18,17 @@ namespace Catalog.API
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddJsonFile("appsettings.json", optional:true, reloadOnChange:true)
+                          .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional:true, reloadOnChange:true)
+                          .AddEnvironmentVariables();
+
+                    if (context.HostingEnvironment.IsEnvironment("local"))
+                    {
+                        config.AddUserSecrets<Startup>();
+                    }
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
